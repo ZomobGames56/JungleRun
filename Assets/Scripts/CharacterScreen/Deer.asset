@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9a342a00953dd46b74e79c07c5b17e, type: 3}
+  m_Name: Deer
+  m_EditorClassIdentifier: 
+  characterName: Deer
+  charIcon: {fileID: 1507431283, guid: 5b7eb51a227e44f45ba1d1ff48252342, type: 3}
+  charPrefab: {fileID: 7835917705931966883, guid: 92ee413d9042cf44bbdded0807081dbe, type: 3}
+  ragdollPrefab: {fileID: 4275705096947039624, guid: d7818d23e92ba0045b409044ec4f20f9, type: 3}
+  speed: 3
+  strength: 2
+  stamina: 4
+  cost: 20
+  costType: 0
+  costTypeSprite: {fileID: 464367861, guid: 500430e2ad2ba1f47a59f968e2997cfd, type: 3}
+  purchased: 0
+  selected: 0

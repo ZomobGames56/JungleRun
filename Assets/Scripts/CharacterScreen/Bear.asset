@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9a342a00953dd46b74e79c07c5b17e, type: 3}
+  m_Name: Bear
+  m_EditorClassIdentifier: 
+  characterName: Bear
+  charIcon: {fileID: -745768049, guid: 4c94ef0096dc95e4eb5861789551756c, type: 3}
+  charPrefab: {fileID: 9126263708149506936, guid: 3cfc9db369ec2db4892554a8f7d4f6e4, type: 3}
+  ragdollPrefab: {fileID: 1812366738694844506, guid: e5a8616437c2e4f46aa895cab496a952, type: 3}
+  speed: 2
+  strength: 5
+  stamina: 4
+  cost: 0
+  costType: 0
+  costTypeSprite: {fileID: 464367861, guid: 500430e2ad2ba1f47a59f968e2997cfd, type: 3}
+  purchased: 1
+  selected: 1

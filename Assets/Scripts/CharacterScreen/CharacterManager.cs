@@ -1,0 +1,158 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System;
+using System.Collections.Generic;
+
+public class CharacterManager : MonoBehaviour
+{
+    public string levelType;
+    public List<Characters> characters;
+    public GameObject charItemPrefab;
+    public Transform contentPanel;
+    public Transform player;
+    GameObject child = null;
+    GameObject childRagdoll = null;
+    public Image costType;
+    public TextMeshProUGUI cost;
+    public TextMeshProUGUI charName;
+    public GameObject buyButton;
+    public GameObject selectButton;
+    public GameObject selectedText;
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI strengthText;
+    public TextMeshProUGUI staminaText;
+
+    public Sprite coinSprite;
+    public Sprite diamondSprite;
+    public static Func<string, Characters> OnFindCharacter;
+
+    void OnEnable()
+    {
+        if (levelType == "Jumping")
+        {
+            GameManager_Jumping.charManager += DeselectCharacters;
+            GameManager_Jumping.charCheck += OnCharacterSelect;
+            GameManager_Jumping.characterSave += SaveCharacter;
+        }
+        else
+        {
+            GameManager_BridgeLevel.charManager += DeselectCharacters;
+            GameManager_BridgeLevel.charCheck += OnCharacterSelect;
+            GameManager_BridgeLevel.characterSave += SaveCharacter;
+        }
+        OnFindCharacter = FindCharacter;
+    }
+
+    void OnDisable()
+    {
+        if (levelType == "Jumping")
+        {
+            GameManager_Jumping.charManager -= DeselectCharacters;
+            GameManager_Jumping.charCheck -= OnCharacterSelect;
+            GameManager_Jumping.characterSave -= SaveCharacter;
+        }
+        else
+        {
+            GameManager_BridgeLevel.charManager -= DeselectCharacters;
+            GameManager_BridgeLevel.charCheck -= OnCharacterSelect;
+            GameManager_BridgeLevel.characterSave -= SaveCharacter;
+        }
+        OnFindCharacter = null;
+    }
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        // if (PlayerPrefs.HasKey("CurrentCharacter"))
+        // {
+        string savedName = "Bear";
+        if (PlayerPrefs.HasKey("CurrentCharacter"))
+        {
+            savedName = PlayerPrefs.GetString("CurrentCharacter");
+        }
+        Characters selectedCharacter = FindCharacter(savedName);
+        OnCharacterSelect(selectedCharacter);
+        // }
+
+        foreach (var charData in characters)
+        {
+            GameObject item = Instantiate(charItemPrefab, contentPanel);
+            CharacterItemUI ui = item.GetComponent<CharacterItemUI>();
+            ui.Setup(charData, OnCharacterSelect);
+            // speedText.text = "Speed : " + charData.speed.ToString();
+            // strengthText.text = "Strength : " + charData.strength.ToString();
+            // agilityText.text = "Agility : " + charData.agility.ToString();
+            // staminaText.text = "Stamina : " + charData.stamina.ToString();
+        }
+    }
+
+    void OnCharacterSelect(Characters character)
+    {
+        Debug.Log("Selected: " + character.characterName);
+        if (child != null)
+        {
+            Destroy(child);
+            Destroy(childRagdoll);
+        }
+        child = Instantiate(character.charPrefab, player);
+        childRagdoll = Instantiate(character.ragdollPrefab, player);
+        childRagdoll.SetActive(false);
+        costType.sprite = character.costTypeSprite;
+        cost.text = " " + character.cost.ToString();
+        charName.text = character.characterName;
+        speedText.text = "Speed : " + character.speed.ToString();
+        strengthText.text = "Strength : " + character.strength.ToString();
+        staminaText.text = "Stamina : " + character.stamina.ToString();
+        if (levelType == "Jumping")
+        {
+            GameManager_Jumping.Instance.currChar = character;
+            GameManager_Jumping.Instance.UpdateChild(child, childRagdoll);
+        }
+        else
+        {
+            GameManager_BridgeLevel.Instance.currChar = character;
+            GameManager_BridgeLevel.Instance.UpdateChild(child, childRagdoll);
+        }
+        if (character.purchased)
+        {
+            buyButton.SetActive(false);
+            selectButton.SetActive(true);
+            if (character.selected)
+            {
+                selectButton.SetActive(false);
+                selectedText.SetActive(true);
+            }
+        }
+        else
+        {
+            buyButton.SetActive(true);
+            selectButton.SetActive(false);
+            selectedText.SetActive(false);
+        }
+    }
+
+    void DeselectCharacters(Characters currChar)
+    {
+        foreach (var charData in characters)
+        {
+            if (!(charData == currChar))
+            {
+                charData.selected = false;
+            }
+        }
+    }
+
+    void SaveCharacter()
+    {
+        foreach (var charData in characters)
+        {
+            charData.Save();
+        }
+    }
+
+    Characters FindCharacter(string savedName)
+    {
+        return characters.Find(c => c.characterName == savedName);
+    }
+}

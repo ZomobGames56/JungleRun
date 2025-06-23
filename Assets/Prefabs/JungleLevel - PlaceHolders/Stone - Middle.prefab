@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5586696079873142820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3313202143301162484}
+  - component: {fileID: 7386392768030181170}
+  - component: {fileID: 7716388197755486740}
+  - component: {fileID: 1236115055752758536}
+  - component: {fileID: -744506906436503230}
+  m_Layer: 6
+  m_Name: Stone - Middle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3313202143301162484
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586696079873142820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7386392768030181170
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586696079873142820}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 14.825922, y: 15.693771, z: 0.48683167}
+  m_Center: {x: -0.24729443, y: 7.3468857, z: 6.7187185}
+--- !u!114 &7716388197755486740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586696079873142820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2fb0d36795584d48b86ed3d5a93e691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1236115055752758536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586696079873142820}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f706c7df5c31864fa01a58bcb23367c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spikes: {fileID: 5761976357592645928, guid: 41150b1f0d8737d4ba8fd8f8dd145b06, type: 3}
+  firePrefab: {fileID: 0}
+  fireCannon: {fileID: 8181425609103444135, guid: e0c6e48105d4927479eaad1e1fc813cc, type: 3}
+  fireSpawn: {fileID: 0}
+  fireSpawn2: {fileID: 0}
+  spikeAudio: {fileID: 8300000, guid: 3b0a3ee512ec2c9418e7d64c23c82ee7, type: 3}
+  leftrightSpeed: 2
+  stoneMoved: 0
+  multipleStones: 0
+--- !u!114 &-744506906436503230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586696079873142820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 120b0559b51df62478adf1536ab27c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stones:
+  - {fileID: 629763012095817541, guid: dd79fcea2079e904da44d60dd050d19f, type: 3}
+  - {fileID: 1678959459758253354, guid: ce09c792855264f40b692609cee2b6f6, type: 3}
+  - {fileID: 4715760200818872633, guid: 792477c37164017489bfea8f2a165c17, type: 3}
+  - {fileID: 5192640802011249023, guid: e919d4e8f3cb0fd4fb10a79ad3a7c38a, type: 3}
+  multipleStones: 0
