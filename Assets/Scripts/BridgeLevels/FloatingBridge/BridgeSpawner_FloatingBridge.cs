@@ -5,16 +5,21 @@ using UnityEngine;
 public class BridgeSpawner_FloatingBridge : MonoBehaviour
 {
     private GameObject bridgePrefab;
-    public List<GameObject> bridges = new List<GameObject>();
+    public GameObject fullBridge;
     public List<GameObject> obstacleBridges = new List<GameObject>();
     public List<GameObject> sideEnvirs = new List<GameObject>();
     public List<GameObject> activeBridges = new List<GameObject>();
+    public List<GameObject> deactiveBridges = new List<GameObject>();
+    public List<GameObject> deactiveObstacleBridges = new List<GameObject>();
     int gap = 2;
     int countBtwObs = 0;
     private int count = 0;
     private Transform spawn;
     public Transform lastBridgeSpawn;
+    private float bridgeGap = 4f;
+    private bool isGap = false;
     private DestroyBridge_BridgeLevel destroyBridge_BridgeLevel;
+    bool obstacleToBeSpawned = false;
 
     void OnEnable()
     {
@@ -29,89 +34,126 @@ public class BridgeSpawner_FloatingBridge : MonoBehaviour
     void StartSpawning()
     {
         destroyBridge_BridgeLevel = GameObject.Find("DestroyBridge").transform.GetComponent<DestroyBridge_BridgeLevel>();
-        if (!GameManager_BridgeLevel.startTutorial) spawn = transform;
-        else spawn = lastBridgeSpawn;
+        spawn = transform;
         gap = Random.Range(2, 5);
-        for (int i = 0; i < 20; i++)
+
+        for (int i = 0; i < 15; i++)
         {
-            if (gap == countBtwObs)
-            {
-                int rando = Random.Range(0, obstacleBridges.Count);
-                bridgePrefab = obstacleBridges[rando];
-                GameObject t = Instantiate(bridgePrefab, spawn);
-                t.transform.SetParent(null);
-                activeBridges.Add(t);
-                spawn = activeBridges[activeBridges.Count - 1].transform.GetChild(0);
-                countBtwObs = 0;
-                gap = Random.Range(2, 6);
-            }
-            else
-            {
-                int rando = Random.Range(0, bridges.Count);
-                bridgePrefab = bridges[rando];
-                GameObject t = Instantiate(bridgePrefab, spawn);
-                t.transform.SetParent(null);
-                activeBridges.Add(t);
-                spawn = activeBridges[activeBridges.Count - 1].transform.GetChild(0);
-                countBtwObs++;
-            }
+            SpawnBridge();
         }
     }
 
     public void SpawnBridge()
     {
-        Destroy(activeBridges[0]);
-        activeBridges.RemoveAt(0);
         if (gap == countBtwObs)
         {
             int rando = Random.Range(0, obstacleBridges.Count);
             bridgePrefab = obstacleBridges[rando];
-            GameObject t = Instantiate(bridgePrefab, spawn);
-            t.transform.SetParent(null);
-            activeBridges.Add(t);
-            spawn = activeBridges[activeBridges.Count - 1].transform.GetChild(0);
             countBtwObs = 0;
-            gap = Random.Range(2, 6);
+            obstacleToBeSpawned = true;
+            gap = Random.Range(1, 3);
         }
         else
         {
-            int rando = Random.Range(0, bridges.Count);
-            bridgePrefab = bridges[rando];
-            GameObject t = Instantiate(bridgePrefab, spawn);
-            t.transform.SetParent(null);
-            activeBridges.Add(t);
-            spawn = activeBridges[activeBridges.Count - 1].transform.GetChild(0);
+            bridgePrefab = fullBridge;
+            obstacleToBeSpawned = false;
             countBtwObs++;
         }
-        count++;
+
         if (count % 4 == 0)
         {
-            if (activeBridges[6].name != "EmptyBridge(Clone)" && activeBridges[4].name != "EmptyBridge(Clone)" && activeBridges[6].name != "EmptyBridge2(Clone)" && activeBridges[4].name != "EmptyBridge2(Clone)" && activeBridges[6].name != "MiddleGapBridge(Clone)" && activeBridges[4].name != "MiddleGapBridge(Clone)")
+            isGap = true;
+        }
+
+        GameObject newBridge;
+
+        if (activeBridges.Count > 15)
+        {
+            GameObject oldBridge = activeBridges[0];
+            activeBridges.RemoveAt(0);
+
+            oldBridge.SetActive(false);
+
+            if (oldBridge.name.Contains("FullBridge"))
             {
-                StopAllCoroutines();
-                // StartCoroutine(Destroying(activeBridges[5].transform));
-                destroyBridge_BridgeLevel.DestroyBridge(activeBridges[5].transform);
+                deactiveBridges.Add(oldBridge);
+            }
+            else
+            {
+                deactiveObstacleBridges.Add(oldBridge);
+            }
+
+            if (obstacleToBeSpawned)
+            {
+                if (deactiveObstacleBridges.Count > 0)
+                {
+                    int r = Random.Range(0, deactiveObstacleBridges.Count);
+                    newBridge = deactiveObstacleBridges[r];
+                    deactiveObstacleBridges.RemoveAt(r);
+                }
+                else
+                {
+                    newBridge = Instantiate(bridgePrefab);
+                }
+            }
+            else
+            {
+                if (deactiveBridges.Count > 0)
+                {
+                    newBridge = deactiveBridges[0];
+                    deactiveBridges.RemoveAt(0);
+                }
+                else
+                {
+                    newBridge = Instantiate(fullBridge);
+                }
+            }
+
+            newBridge.transform.position = spawn.position;
+            if (isGap)
+            {
+                newBridge.transform.position += Vector3.forward * bridgeGap;
+                isGap = false;
+            }
+
+            newBridge.SetActive(true);
+            activeBridges.Add(newBridge);
+
+            if (newBridge.transform.childCount > 0)
+            {
+                spawn = newBridge.transform.GetChild(0);
+            }
+        }
+        else
+        {
+            newBridge = Instantiate(bridgePrefab, spawn.position, Quaternion.identity);
+
+            if (isGap)
+            {
+                newBridge.transform.position += Vector3.forward * bridgeGap;
+                isGap = false;
+            }
+
+            activeBridges.Add(newBridge);
+
+            if (newBridge.transform.childCount > 0)
+            {
+                spawn = newBridge.transform.GetChild(0);
             }
         }
 
-        if (count % 8 == 0)
+        count++;
+
+        if (count % 8 == 0 && sideEnvirs.Count > 0 && activeBridges.Count > 0)
         {
-            int rando = Random.Range(0, sideEnvirs.Count);
-            Instantiate(sideEnvirs[rando], activeBridges[activeBridges.Count - 1].transform);
+            int r = Random.Range(0, sideEnvirs.Count);
+            Instantiate(sideEnvirs[r], activeBridges[0].transform);
         }
 
         if (count % 20 == 0)
         {
             GameManager_BridgeLevel.Instance.UpdateSpeed();
-        }
-    }
-
-    IEnumerator Destroying(Transform obj){
-        for(int j=0; j < obj.childCount; j++){
-            obj.GetChild(j).gameObject.AddComponent<Rigidbody>();
-            Collider col = obj.GetChild(j).GetComponent<Collider>();
-            if(col != null) Destroy(col);
-            yield return new WaitForSeconds(0.1f);
+            bridgeGap = Mathf.Min(bridgeGap + 1f, 10f);
         }
     }
 }

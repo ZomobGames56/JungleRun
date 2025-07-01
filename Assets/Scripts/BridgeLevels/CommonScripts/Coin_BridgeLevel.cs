@@ -7,6 +7,7 @@ public class Coin_BridgeLevel : MonoBehaviour
 {
     private Transform player;
     private Tween upDown;
+    [SerializeField] GameObject effect;
 
     private void Start()
     {
@@ -23,6 +24,7 @@ public class Coin_BridgeLevel : MonoBehaviour
         if(other.gameObject.CompareTag("Player")){
             GameManager_BridgeLevel.Instance.UpdateCoins("Gain", 1);
             SoundManager_BridgeLevel.Instance.PlayCoinsSound();
+            Instantiate(effect, new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z + 1f), Quaternion.identity).transform.SetParent(null);
             if (upDown != null && upDown.IsActive())
             {
                 upDown.Kill();

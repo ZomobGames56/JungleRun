@@ -16,7 +16,7 @@ public class Ghost_Horror : MonoBehaviour
 
     void Update()
     {
-        if (GameManager_BridgeLevel.Instance.startGame && !GameManager_BridgeLevel.Instance.paused && !GameManager_BridgeLevel.startTutorial)
+        if (GameManager_BridgeLevel.Instance.startGame && !GameManager_BridgeLevel.Instance.paused)
         {
             timer += Time.deltaTime;
             if (timer >= rando)

@@ -13,7 +13,7 @@ public class GameManager_Jumping : MonoBehaviour
 
     // Inputs
     [Header("Inputs")]
-    [SerializeField] string levelType;
+    public string levelType;
     [SerializeField] Transform startScreenCamPos;
     [SerializeField] Transform charScreenCamPos;
     [SerializeField] Transform gameCamPos;
@@ -32,10 +32,14 @@ public class GameManager_Jumping : MonoBehaviour
     [SerializeField] GameObject settingsScreen;
     [SerializeField] GameObject exploreScreen;
     [SerializeField] GameObject shopScreen;
+    [SerializeField] GameObject magicTextScreen;
+    [SerializeField] GameObject magicText;
+    [SerializeField] TextMeshProUGUI magicTextCountdown;
     [SerializeField] GameObject purchaseConfirmScreen;
     [SerializeField] GameObject shopCharacterScreen;
     [SerializeField] GameObject shopClothesScreen;
     [SerializeField] GameObject shopAccessoriesScreen;
+    [SerializeField] GameObject tutorialEndScreen;
     [SerializeField] List<GameObject> powerUps = new List<GameObject>();
     [SerializeField] TextMeshProUGUI startScreenHighScore;
     [SerializeField] TextMeshProUGUI topPanelCoins;
@@ -65,11 +69,6 @@ public class GameManager_Jumping : MonoBehaviour
     public bool magicStoneSpawned = false;
     bool onceDead = true;
 
-    // Tutorial Essentials
-    [Header("Tutorial Essentials")]
-    [SerializeField] List<GameObject> tutorialColliders = new List<GameObject>();
-    [SerializeField] List<GameObject> tutorialStones = new List<GameObject>();
-
     // Private Variables
     GameObject player;
     GameObject playerBody;
@@ -79,7 +78,6 @@ public class GameManager_Jumping : MonoBehaviour
     [SerializeField] List<string> accessory = new List<string>();
     Rigidbody rb;
     Animator animator;
-    ForwardMovement_Jumping forwardMovement_Jumping;
     float score = 0f;
     int displayScore = 0;
     int coins = 0;
@@ -101,12 +99,14 @@ public class GameManager_Jumping : MonoBehaviour
     public static event Action<QuestType, int> questUpdater;
     public static event Action questUpdaterPlayerDied;
     public static event Action<bool, string> playerMovement;
+    // public static event Action<bool> allowMovement;
     public static event Action<GameObject, Animator> updatePlayerMove;
     public static event Action<bool, float> stoneSpawning;
+    public static event Action stoneGaps;
     public static event Action shopPopulate;
     public static event Action<int> buyCheck;
     public static event Action<Characters> charManager;
-    public static event Action<Characters> charCheck;
+    public static event Action<Characters, int> charCheck;
     public static event Action characterSave;
 
     private void Awake()
@@ -129,7 +129,6 @@ public class GameManager_Jumping : MonoBehaviour
         playerRagdoll = player.transform.GetChild(player.transform.childCount - 1).gameObject;
         rb = player.GetComponent<Rigidbody>();
         animator = playerBody.GetComponent<Animator>();
-        forwardMovement_Jumping = player.GetComponent<ForwardMovement_Jumping>();
 
         if (PlayerPrefs.HasKey("HighScore - " + levelType))
         {
@@ -143,29 +142,24 @@ public class GameManager_Jumping : MonoBehaviour
             topPanelCoins.text = coins.ToString();
         }
 
-        if (PlayerPrefs.GetInt("Tutorial - " + levelType, 1) == 1)
-        {
-            startTutorial = true;
-            playerMovement?.Invoke(false, "Left");
-            stoneSpawning?.Invoke(true, 60f);
-        }
-        else
-        {
-            startTutorial = false;
+        // if (PlayerPrefs.GetInt("Tutorial", 1) == 1)
+        // {
+        //     startTutorial = true;
+        //     // rb.isKinematic = false;
+        //     playerMovement?.Invoke(false, "Left");
+        //     stoneSpawning?.Invoke(true, 60f);
+        //     forwardMovement_Jumping.enabled = true;
+        // }
+        // else
+        // {
+            // startTutorial = false;
+            // rb.isKinematic = true;
             playerMovement?.Invoke(true, "Centre");
             // playerMovement_Jumping.enabled = true;
             // playerMovement_Jumping.currDir = "Centre";
-            foreach (GameObject obj in tutorialColliders)
-            {
-                obj.SetActive(false);
-            }
-            foreach (GameObject obj in tutorialStones)
-            {
-                obj.SetActive(false);
-            }
             // stoneSpawner_Jumping.spawnPos = 13f;
-            stoneSpawning?.Invoke(true, 13f);
-        }
+            stoneSpawning?.Invoke(true, 10f);
+        // }
         // stoneSpawner_Jumping.StartSpawning();
 
         // PlayerPrefs.DeleteKey("CharacterList");
@@ -182,10 +176,11 @@ public class GameManager_Jumping : MonoBehaviour
         string accessoryData = PlayerPrefs.GetString("AccessoryList");
         if (accessoryData != "") accessory = new List<string>(accessoryData.Split(','));
 
+        tutorialEndScreen.SetActive(false);
         shopPopulate?.Invoke();
-        Debug.Log(startTutorial);
+        // Debug.Log(startTutorial);
         playerDead = false;
-        Time.timeScale = 1.3f;
+        Time.timeScale = 1f;
     }
 
     IEnumerator StartFirebaseEvent()
@@ -196,7 +191,8 @@ public class GameManager_Jumping : MonoBehaviour
 
     void Update()
     {
-        if (!startTutorial && startGame)
+        if (startGame)
+        // if (!startTutorial && startGame)
         {
             // score += Time.deltaTime * 10f;
             // score = Mathf.FloorToInt(score);
@@ -247,6 +243,7 @@ public class GameManager_Jumping : MonoBehaviour
         //     questManager.AddProgress(QuestType.Coins, amount);
         // }
         coinsCurr += amount;
+        if (coinsCurr < 0) coinsCurr = 0;
         inGameScreenCoins.text = coinsCurr.ToString();
         questUpdater?.Invoke(QuestType.Coins, amount);
         // questManager.AddProgress(QuestType.Coins, amount);
@@ -258,12 +255,12 @@ public class GameManager_Jumping : MonoBehaviour
         if (count % 15 == 0)
         {
             Time.timeScale += 0.1f * Time.timeScale;
+            if (Time.timeScale > 2.5f) Time.timeScale = 2.5f;
+            stoneGaps?.Invoke();
+            Debug.Log("Time : " + Time.timeScale);
+            animator.speed = 1 / (Time.timeScale);
         }
-
-        if (Time.timeScale > 2.5f) Time.timeScale = 2.5f;
         // questManager.AddProgress(QuestType.Score, Mathf.FloorToInt(score));
-        animator.speed = 1 / (Time.timeScale);
-        Debug.Log("Time : " + Time.timeScale);
     }
 
     public void EndGame()
@@ -280,9 +277,8 @@ public class GameManager_Jumping : MonoBehaviour
             PlayerPrefs.SetInt("Coins", coins);
             questUpdaterPlayerDied?.Invoke();
             characterSave?.Invoke();
-            rb.linearVelocity = new Vector3(0f, 0f, 0f);
+            // rb.linearVelocity = new Vector3(0f, 0f, 0f);
             playerBody.SetActive(false);
-            forwardMovement_Jumping.enabled = false;
             playerRagdoll.SetActive(true);
             Invoke("StopGame", 1f);
         }
@@ -310,12 +306,12 @@ public class GameManager_Jumping : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public void ToggleStart(bool tutorial)
-    {
-        startTutorial = !tutorial;
-        PlayerPrefs.SetInt("Tutorial - " + levelType, startTutorial ? 1 : 0);
-        PlayerPrefs.Save();
-    }
+    // public void ToggleStart(bool tutorial)
+    // {
+    //     startTutorial = !tutorial;
+    //     PlayerPrefs.SetInt("Tutorial - " + levelType, startTutorial ? 1 : 0);
+    //     PlayerPrefs.Save();
+    // }
 
     public void StartButton()
     {
@@ -334,27 +330,28 @@ public class GameManager_Jumping : MonoBehaviour
         if (isTransitioning) yield break;
         isTransitioning = true;
 
-        animator.SetTrigger("StartJump");
+        // animator.SetTrigger("StartJump");
+        animator.SetTrigger("Run");
 
         DOTween.Kill(Camera.main.transform);
 
         Sequence camSeq = DOTween.Sequence();
-        camSeq.Append(Camera.main.transform.DOMove(gameCamPos.position, 3f).SetEase(Ease.InOutSine));
-        camSeq.Join(Camera.main.transform.DORotate(gameCamPos.eulerAngles, 3f).SetEase(Ease.InOutSine));
+        camSeq.Append(Camera.main.transform.DOMove(gameCamPos.position, 0.75f).SetEase(Ease.InOutSine));
+        camSeq.Join(Camera.main.transform.DORotate(gameCamPos.eulerAngles, 0.75f).SetEase(Ease.InOutSine));
         camSeq.OnComplete(() => isTransitioning = false);
 
-        player.transform.DOMoveX(0f, 3f).SetEase(Ease.InOutSine);
-        playerBody.transform.DORotate(Vector3.zero, 3f).SetEase(Ease.InOutSine);
+        player.transform.DOMoveX(0f, 0.75f).SetEase(Ease.InOutSine);
+        playerBody.transform.DORotate(Vector3.zero, 0.75f).SetEase(Ease.InOutSine);
 
         if (extraLight != null) extraLight.SetActive(false);
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(0.75f);
 
         rb.useGravity = true;
         startGame = true;
         river.transform.SetParent(player.transform);
         river.transform.SetSiblingIndex(0);
-        animator.SetTrigger("Run");
+        // player.transform.position = new Vector3(0f, -0.9f, -7.6f);
     }
 
     IEnumerator DisappearPowerUp()
@@ -416,8 +413,8 @@ public class GameManager_Jumping : MonoBehaviour
         DOTween.Kill(child1);
 
         Sequence seq = DOTween.Sequence();
-        seq.Append(child0.DOScale(1.08972f, 0.8f).SetEase(Ease.OutBack));
-        seq.Join(child1.DOScale(1f, 0.8f).SetEase(Ease.OutBack));
+        seq.Append(child0.DOScale(1.08972f, 0.5f).SetEase(Ease.OutBack));
+        seq.Join(child1.DOScale(1f, 0.5f).SetEase(Ease.OutBack));
         seq.OnComplete(() => isTransitioning = false);
 
         startScreen.SetActive(false);
@@ -455,7 +452,7 @@ public class GameManager_Jumping : MonoBehaviour
                     currshopBuyName = PlayerPrefs.GetString("CurrentCharacter");
 
                 if (currChar.characterName != currshopBuyName)
-                    charCheck?.Invoke(CharacterManager.OnFindCharacter?.Invoke(currshopBuyName));
+                    charCheck?.Invoke(CharacterManager.OnFindCharacter?.Invoke(currshopBuyName), coins);
 
                 RectTransform charchild1 = characterScreen.transform.GetChild(1).GetComponent<RectTransform>();
                 RectTransform charchild2 = characterScreen.transform.GetChild(2).GetComponent<RectTransform>();
@@ -464,10 +461,10 @@ public class GameManager_Jumping : MonoBehaviour
                 DOTween.Kill(Camera.main.transform);
 
                 Sequence charseq = DOTween.Sequence();
-                charseq.Append(charchild1.DOAnchorPosY(-Screen.height, 1f));
-                charseq.Join(charchild2.DOAnchorPosY(-Screen.height, 1f));
-                charseq.Join(Camera.main.transform.DOMove(startScreenCamPos.position, 1f));
-                charseq.Join(Camera.main.transform.DORotate(startScreenCamPos.eulerAngles, 1f));
+                charseq.Append(charchild1.DOAnchorPosY(-Screen.height, 0.5f));
+                charseq.Join(charchild2.DOAnchorPosY(-Screen.height, 0.5f));
+                charseq.Join(Camera.main.transform.DOMove(startScreenCamPos.position, 0.5f));
+                charseq.Join(Camera.main.transform.DORotate(startScreenCamPos.eulerAngles, 0.5f));
                 charseq.AppendCallback(() =>
                 {
                     characterScreen.SetActive(false);
@@ -506,8 +503,8 @@ public class GameManager_Jumping : MonoBehaviour
                     .Append(rectTransform1.DOAnchorPos(new Vector2(1000, -154.9013f), 0.5f))
                     .Join(rectTransform2.DOAnchorPos(new Vector2(1000, -154.9013f), 0.5f))
                     .Join(rectTransform3.DOAnchorPos(new Vector2(1000, 54.48608f), 0.5f))
-                    .Join(Camera.main.transform.DOMove(startScreenCamPos.position, 1f))
-                    .Join(Camera.main.transform.DORotate(startScreenCamPos.eulerAngles, 1f))
+                    .Join(Camera.main.transform.DOMove(startScreenCamPos.position, 0.5f))
+                    .Join(Camera.main.transform.DORotate(startScreenCamPos.eulerAngles, 0.5f))
                     .AppendCallback(() =>
                     {
                         shopScreen.SetActive(false);
@@ -563,8 +560,8 @@ public class GameManager_Jumping : MonoBehaviour
         DOTween.Kill(Camera.main.transform);
 
         Sequence camSeq = DOTween.Sequence();
-        camSeq.Join(Camera.main.transform.DOMove(charScreenCamPos.position, 1f).SetEase(Ease.InOutSine));
-        camSeq.Join(Camera.main.transform.DORotate(charScreenCamPos.eulerAngles, 1f).SetEase(Ease.InOutSine));
+        camSeq.Join(Camera.main.transform.DOMove(charScreenCamPos.position, 0.5f).SetEase(Ease.InOutSine));
+        camSeq.Join(Camera.main.transform.DORotate(charScreenCamPos.eulerAngles, 0.5f).SetEase(Ease.InOutSine));
 
         RectTransform rectTransform1 = characterScreen.transform.GetChild(1).GetComponent<RectTransform>();
         DOTween.Kill(rectTransform1);
@@ -575,8 +572,8 @@ public class GameManager_Jumping : MonoBehaviour
         rectTransform2.anchoredPosition = new Vector2(0, -Screen.height);
 
         Sequence charSeq = DOTween.Sequence();
-        charSeq.Append(rectTransform1.DOAnchorPos(new Vector2(0, 0), 1f).SetEase(Ease.OutExpo));
-        charSeq.Join(rectTransform2.DOAnchorPos(new Vector2(0, 50), 1f).SetEase(Ease.OutExpo));
+        charSeq.Append(rectTransform1.DOAnchorPos(new Vector2(0, 0), 0.5f).SetEase(Ease.OutExpo));
+        charSeq.Join(rectTransform2.DOAnchorPos(new Vector2(0, 50), 0.5f).SetEase(Ease.OutExpo));
         charSeq.OnComplete(() => isTransitioning = false);
     }
 
@@ -915,6 +912,43 @@ public class GameManager_Jumping : MonoBehaviour
         paused = false;
 
         isTransitioning = false;
+    }
+
+    public void MagicPause(float timer)
+    {
+        StartCoroutine(MagicContinue(timer));
+    }
+
+    IEnumerator MagicContinue(float secondPhaseDuration)
+    {
+        magicTextScreen.SetActive(true);
+        magicTextCountdown.enabled = false;
+        magicText.SetActive(true);
+        currTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        int countdown = 3;
+        while (countdown > 0)
+        {
+            yield return new WaitForSecondsRealtime(1f);
+            countdown--;
+        }
+
+        magicText.SetActive(false);
+        pauseButton.SetActive(true);
+        Time.timeScale = currTimeScale;
+        magicTextCountdown.enabled = true;
+
+        float elapsed = 0f;
+        while (elapsed < secondPhaseDuration)
+        {
+            magicTextCountdown.text = $"Time Left: {Mathf.CeilToInt(secondPhaseDuration - elapsed)}";
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        magicTextCountdown.enabled = false;
+        magicTextScreen.SetActive(false);
     }
     
     void OnApplicationPause(bool pause)

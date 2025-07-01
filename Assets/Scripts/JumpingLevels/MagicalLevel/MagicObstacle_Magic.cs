@@ -45,12 +45,14 @@ public class MagicObstacle_Magic : MonoBehaviour
             case CollisionEffectType.GainCoins:
                 magicText.text = "Gained 10 Coins!!";
                 Invoke("HideCanvas", 2f);
+                GameManager_Jumping.Instance.MagicPause(0f);
                 GameManager_Jumping.Instance.UpdateCoins(10);
                 break;
 
             case CollisionEffectType.LoseCoins:
                 magicText.text = "Lost 10 Coins!!";
                 Invoke("HideCanvas", 2f);
+                GameManager_Jumping.Instance.MagicPause(0f);
                 GameManager_Jumping.Instance.UpdateCoins(-10);
                 break;
 
@@ -58,23 +60,27 @@ public class MagicObstacle_Magic : MonoBehaviour
                 magicText.text = "Sloth Mode!!";
                 originalTimeScale = Time.timeScale;
                 Time.timeScale = 0.5f;
+                GameManager_Jumping.Instance.MagicPause(5f);
                 Invoke("SpeedSlow", 5f);
                 break;
 
             case CollisionEffectType.InvertControls:
                 magicText.text = "Inverted Controls!! \nRight = Left \nLeft = Right";
+                GameManager_Jumping.Instance.MagicPause(10f);
                 GameManager_Jumping.Instance.isInverted = true;
                 Invoke("Invert", 10f);
                 break;
 
             case CollisionEffectType.ObstacleRush:
                 magicText.text = "Obstacle Rush!!";
+                GameManager_Jumping.Instance.MagicPause(0f);
                 GameManager_Jumping.Instance.obstacleRush = true;
                 Invoke("Obstacle", 10f);
                 break;
 
             case CollisionEffectType.DoubleScore:
                 magicText.text = "Earn Double Score!!";
+                GameManager_Jumping.Instance.MagicPause(10f);
                 GameManager_Jumping.Instance.doubled = true;
                 Invoke("Doubled", 10f);
                 break;

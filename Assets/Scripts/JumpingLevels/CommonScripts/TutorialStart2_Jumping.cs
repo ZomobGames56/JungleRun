@@ -34,7 +34,7 @@ public class TutorialStart2_Jumping : MonoBehaviour
     
     void HandleFallCheck(){
         if(player.position.y < -5f){
-            GameManager_Jumping.Instance.EndGame();
+            GameManager_Jumping_Tutorial.Instance.EndGame();
         }
     }
 }

@@ -7,13 +7,11 @@ public class TutorialStart3_Jumping : MonoBehaviour
 {
     Tutorial3_Jumping tutorial3_Jumping;
     Transform player;
-    PlayerMovement_Jumping playerMovement_Jumping;
     [SerializeField] string levelType;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerMovement_Jumping = player.GetComponent<PlayerMovement_Jumping>();
         tutorial3_Jumping = GetComponent<Tutorial3_Jumping>();
     }
 
@@ -31,20 +29,17 @@ public class TutorialStart3_Jumping : MonoBehaviour
         HandleFallCheck();
         if (tutorial3_Jumping.done)
         {
-            tutorial3_Jumping.done = false;
             tutorial3_Jumping.enabled = false;
-            Time.timeScale = 1.3f;
-            GameManager_Jumping.Instance.tutorialStarted = false;
-            PlayerPrefs.SetInt("Tutorial - " + levelType, 0);
+            Time.timeScale = 1f;
+            PlayerPrefs.SetInt("Tutorial", 0);
             PlayerPrefs.Save();
-            GameManager_Jumping.startTutorial = false;
-            playerMovement_Jumping.enabled = true;
+            tutorial3_Jumping.done = false;
         }
     }
     
     void HandleFallCheck(){
         if(player.position.y < -5f){
-            GameManager_Jumping.Instance.EndGame();
+            GameManager_Jumping_Tutorial.Instance.EndGame();
         }
     }
 }

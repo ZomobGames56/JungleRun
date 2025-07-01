@@ -1,23 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow_BridgeLevel : MonoBehaviour
 {
-    [SerializeField] float yDis;
-    Transform player;
+    [SerializeField] float yDis = 2f;
+    [SerializeField] float zOffset = -5f;
+    private Transform player;
 
-    void Start(){
+    void Start()
+    {
         player = GameObject.Find("Player").transform;
     }
 
-    private void Update()
+    void LateUpdate()
     {
-        if(GameManager_BridgeLevel.Instance.startGame && !GameManager_BridgeLevel.Instance.playerDead){
-            Vector3 a = transform.position;
-            a.y = yDis;
-            a.x = 0f;
-            transform.position = a;
+        if (GameManager_BridgeLevel.Instance.startGame && !GameManager_BridgeLevel.Instance.playerDead)
+        {
+            Vector3 targetPos = new Vector3(0f, yDis, player.position.z + zOffset);
+            transform.position = targetPos;
         }
     }
 }

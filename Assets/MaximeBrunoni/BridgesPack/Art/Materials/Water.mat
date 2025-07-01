@@ -16,8 +16,9 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2987
-  stringTagMap: {}
+  m_CustomRenderQueue: 1987
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -95,11 +96,16 @@ Material:
     - Vector1_a5582bc8ea0940eaad801a1a72844093: 6.4
     - Vector1_b742e243c04f44efa4da6859dea616df: 77.24
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
+    - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
+    - _CastShadows: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
+    - _CurveX: 0
+    - _CurveY: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -120,9 +126,11 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
+    - _ZTest: 4
     - _ZWrite: 1
+    - _ZWriteControl: 0
     - _alpha_val: 1
-    - _voronoi_angle: 0.7
+    - _voronoi_angle: 5.1
     - _voronoi_power: 2
     - _voronoi_scale: 5
     m_Colors:
@@ -136,7 +144,7 @@ Material:
     - _emmisive: {r: 0, g: 686.2412, b: 1024, a: 0}
     - _voronoi_color: {r: 0.002124689, g: 0.35640025, b: 0.637597, a: 0}
     - _voronoi_offset: {r: 0, g: 0.1, b: 0, a: 0}
-    - _voronoi_tililg: {r: 5, g: 29.5, b: 0, a: 0}
+    - _voronoi_tililg: {r: 4.71, g: 29.5, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3511887597443148743

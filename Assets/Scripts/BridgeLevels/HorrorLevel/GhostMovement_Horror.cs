@@ -8,6 +8,7 @@ public class GhostMovement_Horror : MonoBehaviour
 
     void Start()
     {
+        transform.SetParent(null);
         rb = GetComponent<Rigidbody>();
         targetPosition = transform.position + Vector3.back * 20f;
     }

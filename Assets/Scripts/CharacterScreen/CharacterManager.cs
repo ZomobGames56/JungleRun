@@ -19,6 +19,7 @@ public class CharacterManager : MonoBehaviour
     public GameObject buyButton;
     public GameObject selectButton;
     public GameObject selectedText;
+    public GameObject notEnoughPanel;
     public TextMeshProUGUI speedText;
     public TextMeshProUGUI strengthText;
     public TextMeshProUGUI staminaText;
@@ -26,6 +27,7 @@ public class CharacterManager : MonoBehaviour
     public Sprite coinSprite;
     public Sprite diamondSprite;
     public static Func<string, Characters> OnFindCharacter;
+    int coinsCurr;
 
     void OnEnable()
     {
@@ -34,6 +36,12 @@ public class CharacterManager : MonoBehaviour
             GameManager_Jumping.charManager += DeselectCharacters;
             GameManager_Jumping.charCheck += OnCharacterSelect;
             GameManager_Jumping.characterSave += SaveCharacter;
+        }
+        else if (levelType == "Tutorial")
+        {
+            GameManager_Jumping_Tutorial.charManager += DeselectCharacters;
+            GameManager_Jumping_Tutorial.charCheck += OnCharacterSelect;
+            GameManager_Jumping_Tutorial.characterSave += SaveCharacter;
         }
         else
         {
@@ -63,6 +71,10 @@ public class CharacterManager : MonoBehaviour
 
     void Start()
     {
+        if (PlayerPrefs.HasKey("Coins"))
+        {
+            coinsCurr = PlayerPrefs.GetInt("Coins", 0);
+        }
         player = GameObject.FindGameObjectWithTag("Player").transform;
         // if (PlayerPrefs.HasKey("CurrentCharacter"))
         // {
@@ -72,14 +84,24 @@ public class CharacterManager : MonoBehaviour
             savedName = PlayerPrefs.GetString("CurrentCharacter");
         }
         Characters selectedCharacter = FindCharacter(savedName);
-        OnCharacterSelect(selectedCharacter);
+        OnCharacterSelect(selectedCharacter, coinsCurr);
         // }
 
         foreach (var charData in characters)
         {
+            if (charData.name == "Bear")
+            {
+                charData.selected = true;
+                charData.purchased = true;
+                charData.Save();
+            }
+            else
+            {
+                charData.Load();
+            }
             GameObject item = Instantiate(charItemPrefab, contentPanel);
             CharacterItemUI ui = item.GetComponent<CharacterItemUI>();
-            ui.Setup(charData, OnCharacterSelect);
+            ui.Setup(charData, OnCharacterSelect, coinsCurr);
             // speedText.text = "Speed : " + charData.speed.ToString();
             // strengthText.text = "Strength : " + charData.strength.ToString();
             // agilityText.text = "Agility : " + charData.agility.ToString();
@@ -87,9 +109,10 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    void OnCharacterSelect(Characters character)
+    void OnCharacterSelect(Characters character, int coins)
     {
         Debug.Log("Selected: " + character.characterName);
+        coinsCurr = coins;
         if (child != null)
         {
             Destroy(child);
@@ -109,6 +132,11 @@ public class CharacterManager : MonoBehaviour
             GameManager_Jumping.Instance.currChar = character;
             GameManager_Jumping.Instance.UpdateChild(child, childRagdoll);
         }
+        else if (levelType == "Tutorial")
+        {
+            GameManager_Jumping_Tutorial.Instance.currChar = character;
+            GameManager_Jumping_Tutorial.Instance.UpdateChild(child, childRagdoll);
+        }
         else
         {
             GameManager_BridgeLevel.Instance.currChar = character;
@@ -117,6 +145,7 @@ public class CharacterManager : MonoBehaviour
         if (character.purchased)
         {
             buyButton.SetActive(false);
+            notEnoughPanel.SetActive(false);
             selectButton.SetActive(true);
             if (character.selected)
             {
@@ -126,6 +155,15 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
+            Debug.LogError("COINS - " + coinsCurr.ToString() + "\nCOST - " + character.cost.ToString());
+            if (coinsCurr < character.cost)
+            {
+                notEnoughPanel.SetActive(true);
+            }
+            else
+            {
+                notEnoughPanel.SetActive(false);
+            }
             buyButton.SetActive(true);
             selectButton.SetActive(false);
             selectedText.SetActive(false);

@@ -21,6 +21,12 @@ public class Characters : ScriptableObject
         PlayerPrefs.SetInt(characterName + "_selected", selected ? 1 : 0);
         PlayerPrefs.SetInt(characterName + "purchased", purchased ? 1 : 0);
     }
+
+    public void Load()
+    {
+        selected = PlayerPrefs.GetInt(characterName + "_selected", 0) == 1;
+        purchased = PlayerPrefs.GetInt(characterName + "_purchased", 0) == 1;
+    }
 }
 
 public enum CostTypeChar

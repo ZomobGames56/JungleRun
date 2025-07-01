@@ -2,17 +2,12 @@ using UnityEngine;
 
 public class IdleCheck_BridgeLevel : MonoBehaviour
 {
-    float idleTimer = 0f;
-    float idleTimeAllowed = 0.5f;
-
-    void OnCollisionStay(Collision collision)
+    void OnTriggerEnter(Collider collider)
     {
-        idleTimer += Time.unscaledDeltaTime;
-        if (idleTimer >= idleTimeAllowed)
+        if (collider.gameObject.CompareTag("Player"))
         {
             GameManager_BridgeLevel.Instance.EndGame();
             SoundManager_BridgeLevel.Instance.PlayLoseSound("");
-            idleTimer = 0f;
         }
     }
 }

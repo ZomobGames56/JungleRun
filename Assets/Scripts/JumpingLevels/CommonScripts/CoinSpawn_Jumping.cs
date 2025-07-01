@@ -6,14 +6,15 @@ public class CoinSpawn_Jumping : MonoBehaviour
 {
     [SerializeField] private GameObject coinPrefab;
 
-    void Start(){
+    void OnEnable(){
         int rando = Random.Range(0,100);
-        if(rando < 10){
+        if(rando < 50){
             SpawnCoins();
         }
     }
 
     void SpawnCoins(){
-        Instantiate(coinPrefab, transform.GetChild(0));
+        if(transform.GetChild(0).childCount == 0)
+            Instantiate(coinPrefab, transform.GetChild(0));
     }
 }
