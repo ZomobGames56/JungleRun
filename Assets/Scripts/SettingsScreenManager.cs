@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SettingsScreenManager : MonoBehaviour
 {
@@ -36,16 +37,20 @@ public class SettingsScreenManager : MonoBehaviour
 
     public void PlayButton()
     {
-        if (jungleLevel)
-        {
-            GameManager_Jumping.Instance.ToggleStart(false);
-            GameManager_Jumping.Instance.RestartButton();
-        }
-        else
-        {
-            GameManager_BridgeLevel.Instance.ToggleStart(false);
-            GameManager_BridgeLevel.Instance.RestartButton();
-        }
+        PlayerPrefs.SetInt("hasLaunchedBefore", 0);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("Tutorial");
+        // if (jungleLevel)
+        // {
+        //     // GameManager_Jumping.Instance.ToggleStart(false);
+        //     // GameManager_Jumping.Instance.RestartButton();
+        // }
+        // else
+        // {
+        //     SceneManager.LoadScene(GameManager_BridgeLevel.Instance.levelType);
+        //     // GameManager_BridgeLevel.Instance.ToggleStart(false);
+        //     // GameManager_BridgeLevel.Instance.RestartButton();
+        // }
     }
 
     public void RightButton()

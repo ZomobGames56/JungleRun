@@ -62,17 +62,11 @@ public class GameManager_BridgeLevel : MonoBehaviour
     public static bool startTutorial = true;
     public bool tutorialStarted = false;
 
-    // Tutorial Essentials
-    [Header("Tutorial Essentials")]
-    [SerializeField] List<GameObject> tutorialColliders = new List<GameObject>();
-    [SerializeField] List<GameObject> tutorialBridges = new List<GameObject>();
-
     // Private Variables
     GameObject player;
     GameObject playerBody;
     GameObject playerRagdoll;
     Rigidbody rb;
-    ForwardMovement_BridgeLevel forwardMovement_BridgeLevel;
     [SerializeField] List<string> characters = new List<string>();
     [SerializeField] List<string> clothes = new List<string>();
     [SerializeField] List<string> accessory = new List<string>();
@@ -109,7 +103,7 @@ public class GameManager_BridgeLevel : MonoBehaviour
     public static event Action shopPopulate;
     public static event Action<int> buyCheck;
     public static event Action<Characters> charManager;
-    public static event Action<Characters> charCheck;
+    public static event Action<Characters, int> charCheck;
     public static event Action characterSave;
 
 
@@ -132,8 +126,7 @@ public class GameManager_BridgeLevel : MonoBehaviour
         playerBody = player.transform.GetChild(player.transform.childCount - 2).gameObject;
         playerRagdoll = player.transform.GetChild(player.transform.childCount - 1).gameObject;
         animator = playerBody.GetComponent<Animator>();
-        rb = player.GetComponent<Rigidbody>();
-        forwardMovement_BridgeLevel = player.GetComponent<ForwardMovement_BridgeLevel>();
+        // rb = player.GetComponent<Rigidbody>();
 
         if (PlayerPrefs.HasKey("HighScore - " + levelType))
         {
@@ -147,29 +140,29 @@ public class GameManager_BridgeLevel : MonoBehaviour
             topPanelCoins.text = coins.ToString();
         }
 
-        if (PlayerPrefs.GetInt("Tutorial - " + levelType, 1) == 1)
-        {
-            startTutorial = true;
-            if (levelType == "FloatingBridge" || levelType == "Horror")
-            {
-                Debug.Log("AAA");
-                playerMovementFloatingBridge?.Invoke(false, "Right");
-                coinSpawnFloatingBridge?.Invoke(false);
-                bridgeSpawnerFloatingBridge?.Invoke();
-            }
-            else if (levelType == "Ice")
-            {
-                playerMovementIce?.Invoke(false, "Right");
-                coinSpawnIce?.Invoke(false);
-                bridgeSpawnerIce?.Invoke();
-                // playerMovement_Ice.enabled = true;
-                // coinSpawn_Ice.enabled = true;
-                // playerMovement_Ice.currDir = "Right";
-            }
-        }
-        else
-        {
-            startTutorial = false;
+        // if (PlayerPrefs.GetInt("Tutorial - " + levelType, 1) == 1)
+        // {
+        //     startTutorial = true;
+        //     if (levelType == "FloatingBridge" || levelType == "Horror")
+        //     {
+        //         Debug.Log("AAA");
+        //         playerMovementFloatingBridge?.Invoke(false, "Right");
+        //         coinSpawnFloatingBridge?.Invoke(false);
+        //         bridgeSpawnerFloatingBridge?.Invoke();
+        //     }
+        //     else if (levelType == "Ice")
+        //     {
+        //         playerMovementIce?.Invoke(false, "Right");
+        //         coinSpawnIce?.Invoke(false);
+        //         bridgeSpawnerIce?.Invoke();
+        //         // playerMovement_Ice.enabled = true;
+        //         // coinSpawn_Ice.enabled = true;
+        //         // playerMovement_Ice.currDir = "Right";
+        //     }
+        // }
+        // else
+        // {
+        //     startTutorial = false;
             if (levelType == "FloatingBridge" || levelType == "Horror")
             {
                 playerMovementFloatingBridge?.Invoke(true, "Right");
@@ -178,23 +171,14 @@ public class GameManager_BridgeLevel : MonoBehaviour
             }
             else if (levelType == "Ice")
             {
-                playerMovementIce?.Invoke(true, "Right");
+                playerMovementIce?.Invoke(true, "Mid");
                 coinSpawnIce?.Invoke(true);
                 bridgeSpawnerIce?.Invoke();
                 // playerMovement_Ice.enabled = true;
                 // coinSpawn_Ice.enabled = true;
                 // playerMovement_Ice.currDir = "Right";
             }
-
-            foreach (GameObject obj in tutorialColliders)
-            {
-                obj.SetActive(false);
-            }
-            foreach (GameObject obj in tutorialBridges)
-            {
-                obj.SetActive(false);
-            }
-        }
+        // }
         // PlayerPrefs.DeleteKey("CharacterList");
         // PlayerPrefs.DeleteKey("ClothesList");
         // PlayerPrefs.DeleteKey("AccessoryList");
@@ -210,7 +194,7 @@ public class GameManager_BridgeLevel : MonoBehaviour
         if (accessoryData != "") accessory = new List<string>(accessoryData.Split(','));
 
         shopPopulate?.Invoke();
-        Debug.Log(startTutorial);
+        // Debug.Log(startTutorial);
         Time.timeScale = 1f;
     }
 
@@ -222,7 +206,8 @@ public class GameManager_BridgeLevel : MonoBehaviour
 
     void Update()
     {
-        if (!startTutorial && startGame)
+        if (startGame)
+        // if (!startTutorial && startGame)
         {
             // score += Time.deltaTime * 10f;
             // score = Mathf.FloorToInt(score);
@@ -295,7 +280,7 @@ public class GameManager_BridgeLevel : MonoBehaviour
         Color color = objImage.color;
         while (color.a > 0f)
         {
-            color.a -= 0.1f;
+            color.a -= 0.2f;
             objImage.color = color;
             yield return new WaitForSeconds(3f);
         }
@@ -311,7 +296,6 @@ public class GameManager_BridgeLevel : MonoBehaviour
             calledOnce = true;
             AnalyticsEvents.LevelCompleteEvent(levelType);
             playerDead = true;
-            forwardMovement_BridgeLevel.enabled = false;
             coins += coinsCurr;
             PlayerPrefs.SetInt("Coins", coins);
             questUpdaterPlayerDied?.Invoke();
@@ -343,12 +327,12 @@ public class GameManager_BridgeLevel : MonoBehaviour
         }
     }
 
-    public void ToggleStart(bool tutorial)
-    {
-        startTutorial = !tutorial;
-        PlayerPrefs.SetInt("Tutorial - " + levelType, startTutorial ? 1 : 0);
-        PlayerPrefs.Save();
-    }
+    // public void ToggleStart(bool tutorial)
+    // {
+    //     startTutorial = !tutorial;
+    //     PlayerPrefs.SetInt("Tutorial - " + levelType, startTutorial ? 1 : 0);
+    //     PlayerPrefs.Save();
+    // }
 
     public void StartButton()
     {
@@ -366,34 +350,34 @@ public class GameManager_BridgeLevel : MonoBehaviour
         if (isTransitioning) yield break;
         isTransitioning = true;
 
-        animator.SetTrigger("StartJump");
+        // animator.SetTrigger("StartJump");
+        animator.SetTrigger("Run");
 
         DOTween.Kill(Camera.main.transform);
         DOTween.Kill(player.transform);
         DOTween.Kill(playerBody.transform);
 
-        Camera.main.transform.DOMove(gameCamPos.position, 2f).SetEase(Ease.InOutSine);
-        Camera.main.transform.DORotate(gameCamPos.eulerAngles, 2f).SetEase(Ease.InOutSine);
+        Camera.main.transform.DOMove(gameCamPos.position, 0.25f).SetEase(Ease.InOutSine);
+        Camera.main.transform.DORotate(gameCamPos.eulerAngles, 0.25f).SetEase(Ease.InOutSine);
 
         if (levelType != "Ice")
         {
-            player.transform.DOMove(new Vector3(0.8f, 0.184f, -12.6f), 2f).SetEase(Ease.InOutSine);
+            player.transform.DOMove(new Vector3(0.8f, 0.184f, -12.6f), 0.25f).SetEase(Ease.InOutSine);
         }
         else
         {
-            player.transform.DOMove(new Vector3(1.9f, 0.8f, -22.7f), 2f).SetEase(Ease.InOutSine);
+            player.transform.DOMove(new Vector3(0f, 0.8f, -22.7f), 0.25f).SetEase(Ease.InOutSine);
         }
 
-        playerBody.transform.DORotate(Vector3.zero, 2f).SetEase(Ease.InOutSine);
+        playerBody.transform.DORotate(Vector3.zero, 0.25f).SetEase(Ease.InOutSine);
 
-        if (extraLight != null) extraLight.SetActive(false);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.25f);
 
-        rb.useGravity = true;
+        // rb.useGravity = true;
         startGame = true;
+        if (extraLight != null) extraLight.SetActive(false);
         isTransitioning = false;
-        animator.SetTrigger("Run");
     }
 
     IEnumerator DisappearPowerUp()
@@ -506,7 +490,7 @@ public class GameManager_BridgeLevel : MonoBehaviour
                     currshopBuyName = PlayerPrefs.GetString("CurrentCharacter");
 
                 if (currChar.characterName != currshopBuyName)
-                    charCheck?.Invoke(CharacterManager.OnFindCharacter?.Invoke(currshopBuyName));
+                    charCheck?.Invoke(CharacterManager.OnFindCharacter?.Invoke(currshopBuyName), coins);
 
                 RectTransform charchild1 = characterScreen.transform.GetChild(1).GetComponent<RectTransform>();
                 RectTransform charchild2 = characterScreen.transform.GetChild(2).GetComponent<RectTransform>();

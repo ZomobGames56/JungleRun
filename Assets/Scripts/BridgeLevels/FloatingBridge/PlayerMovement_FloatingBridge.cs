@@ -47,17 +47,17 @@ public class PlayerMovement_FloatingBridge : MonoBehaviour
     // Events
     public static event Action<QuestType, int> questUpdater;
 
-    void OnEnable()
-    {
-        GameManager_BridgeLevel.playerMovementFloatingBridge += ToggleScript;
-        GameManager_BridgeLevel.updatePlayerMoveFloatingBridge += UpdatePlayer;
-    }
+    // void OnEnable()
+    // {
+    //     GameManager_BridgeLevel.playerMovementFloatingBridge += ToggleScript;
+    //     GameManager_BridgeLevel.updatePlayerMoveFloatingBridge += UpdatePlayer;
+    // }
 
-    void OnDisable()
-    {
-        GameManager_BridgeLevel.playerMovementFloatingBridge -= ToggleScript;
-        GameManager_BridgeLevel.updatePlayerMoveFloatingBridge -= UpdatePlayer;
-    }
+    // void OnDisable()
+    // {
+    //     GameManager_BridgeLevel.playerMovementFloatingBridge -= ToggleScript;
+    //     GameManager_BridgeLevel.updatePlayerMoveFloatingBridge -= UpdatePlayer;
+    // }
 
     void ToggleScript(bool enable, string a)
     {

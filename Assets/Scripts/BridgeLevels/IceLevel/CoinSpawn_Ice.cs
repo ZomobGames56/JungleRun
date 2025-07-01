@@ -96,7 +96,7 @@ public class CoinSpawn_Ice : MonoBehaviour
         else{
             prefab = gliderCollectiblePrefab;
         }
-        GameObject spawnedPowerup = Instantiate(prefab, new Vector3(spawnX, 1.5f, spawnPoint.position.z), prefab.transform.rotation);
+        GameObject spawnedPowerup = Instantiate(prefab, new Vector3(spawnX, 1.2f, spawnPoint.position.z), prefab.transform.rotation);
         spawnedPowerup.transform.SetParent(null);
         yield return new WaitForSeconds(1f);
     }

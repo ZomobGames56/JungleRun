@@ -45,14 +45,14 @@ public class QuestManager : MonoBehaviour
         {
             GameManager_Jumping.questUpdater += AddProgress;
             GameManager_Jumping.questUpdaterPlayerDied += SaveQuests;
-            PlayerMovement_Jumping.questUpdater += AddProgress;
+            PlayerController_Jumping.questUpdater += AddProgress;
         }
         else
         {
             GameManager_BridgeLevel.questUpdater += AddProgress;
             GameManager_BridgeLevel.questUpdaterPlayerDied += SaveQuests;
-            PlayerMovement_FloatingBridge.questUpdater += AddProgress;
-            PlayerMovement_Ice.questUpdater += AddProgress;
+            PlayerController_FloatingBridge.questUpdater += AddProgress;
+            PlayerController_Ice.questUpdater += AddProgress;
         }
     }
 
@@ -62,14 +62,14 @@ public class QuestManager : MonoBehaviour
         {
             GameManager_Jumping.questUpdater -= AddProgress;
             GameManager_Jumping.questUpdaterPlayerDied -= SaveQuests;
-            PlayerMovement_Jumping.questUpdater -= AddProgress;
+            PlayerController_Jumping.questUpdater -= AddProgress;
         }
         else
         {
             GameManager_BridgeLevel.questUpdater -= AddProgress;
             GameManager_BridgeLevel.questUpdaterPlayerDied -= SaveQuests;
-            PlayerMovement_FloatingBridge.questUpdater -= AddProgress;
-            PlayerMovement_Ice.questUpdater -= AddProgress;
+            PlayerController_FloatingBridge.questUpdater -= AddProgress;
+            PlayerController_Ice.questUpdater -= AddProgress;
         }
     }
 
@@ -158,7 +158,7 @@ public class QuestManager : MonoBehaviour
             // Animate
             RectTransform rt = questCompletedPrefab.GetComponent<RectTransform>();
             Sequence s = DOTween.Sequence();
-            s.Append(rt.DOAnchorPosY(-200f, 1f).SetEase(Ease.InOutSine));
+            s.Append(rt.DOAnchorPosY(-500f, 1f).SetEase(Ease.InOutSine));
             s.AppendInterval(2f);
             s.Append(rt.DOAnchorPosY(100f, 1f).SetEase(Ease.InOutSine));
 
@@ -224,7 +224,7 @@ public class QuestManager : MonoBehaviour
             questCompletedTextPrefab2.text = levelQuest.questTitle1 + " - " + levelQuest.questIndex.ToString();
             RectTransform rt = questCompletedPrefab2.GetComponent<RectTransform>();
             Sequence s = DOTween.Sequence();
-            s.Append(rt.DOAnchorPosY(-400f, 1f).SetEase(Ease.InOutSine));
+            s.Append(rt.DOAnchorPosY(-700f, 1f).SetEase(Ease.InOutSine));
             s.AppendInterval(2f);
             s.Append(rt.DOAnchorPosY(100f, 1f).SetEase(Ease.InOutSine));
 

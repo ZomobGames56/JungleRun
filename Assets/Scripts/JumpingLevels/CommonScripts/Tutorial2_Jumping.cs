@@ -28,8 +28,7 @@ public class Tutorial2_Jumping : MonoBehaviour
     [Header("Tutorial Essentials")]
     [SerializeField] GameObject fingerObj;
     [SerializeField] Animator fingerAnim;
-    ForwardMovement_Jumping forwardMovement_Jumping;
-    PlayerMovement_Jumping playerMovement_Jumping;
+    ForwardMovement_Jumping_Tutorial forwardMovement_Jumping_Tutorial;
 
     // Private Variables
     Transform playerParent;
@@ -49,16 +48,17 @@ public class Tutorial2_Jumping : MonoBehaviour
         player = playerParent.GetChild(playerParent.childCount - 2);
         rb =  playerParent.GetComponent<Rigidbody>();
         anim = player.GetComponent<Animator>();
-        forwardMovement_Jumping = playerParent.GetComponent<ForwardMovement_Jumping>();
-        playerMovement_Jumping = playerParent.GetComponent<PlayerMovement_Jumping>();
+        forwardMovement_Jumping_Tutorial = playerParent.GetComponent<ForwardMovement_Jumping_Tutorial>();
         fingerObj.SetActive(true);
         fingerAnim.Play("Up");
-        forwardMovement_Jumping.enabled = false;
+        forwardMovement_Jumping_Tutorial.enabled = false;
     }
 
-    void RightTutorial(){
+    void RightTutorial()
+    {
         fingerObj.SetActive(true);
         fingerAnim.Play("Right");
+        rightAllowed = true;
     }
 
     void Update()
@@ -111,7 +111,7 @@ public class Tutorial2_Jumping : MonoBehaviour
                 if (rightAllowed)
                 {
                     StopAllCoroutines();
-                    forwardMovement_Jumping.enabled = true;
+                    forwardMovement_Jumping_Tutorial.enabled = true;
                     Time.timeScale = 1f;
                     fingerObj.SetActive(false);
                     rightAllowed = false;
@@ -124,7 +124,7 @@ public class Tutorial2_Jumping : MonoBehaviour
         {
             swipeDetected = true;
             StopAllCoroutines();
-            rightAllowed = true;
+            // rightAllowed = true;
             StartCoroutine(Jump());
             fingerObj.SetActive(false);
             Invoke("RightTutorial", 0.5f);
@@ -133,6 +133,7 @@ public class Tutorial2_Jumping : MonoBehaviour
 
     IEnumerator HorizontalMovement(string direction){
         rb.useGravity = true;
+        fingerObj.SetActive(false);
 
         Quaternion playerRotations = player.rotation;
         playerRotations = Quaternion.Euler(0f, 20f, 0f);
@@ -151,14 +152,14 @@ public class Tutorial2_Jumping : MonoBehaviour
     }
 
     IEnumerator Jump(){
-        forwardMovement_Jumping.enabled = true;
+        forwardMovement_Jumping_Tutorial.enabled = true;
         rb.useGravity = false;
         rb.linearVelocity = Vector3.zero;
         Quaternion playerRotations = player.rotation;
         playerRotations = Quaternion.Euler(0f, 0f, 0f);
         player.rotation = playerRotations;
         anim.Play("JumpRoll", 0, 0f);
-        Time.timeScale = 0.5f;
+        // Time.timeScale = 0.5f;
 
         Vector3 target = new Vector3(playerParent.position.x, playerParent.position.y + yDis, playerParent.position.z + zDis);
         while(Mathf.Abs(playerParent.position.z - target.z) > 0.5f){

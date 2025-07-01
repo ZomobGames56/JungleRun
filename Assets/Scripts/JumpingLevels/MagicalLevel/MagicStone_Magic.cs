@@ -6,9 +6,9 @@ public class MagicStone_Magic : MonoBehaviour
     public static event Action magicObstacle_Magic;
     bool once = false;
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider collider)
     {
-        if (collision.gameObject.CompareTag("Player") && !once)
+        if (collider.gameObject.CompareTag("Player") && !once)
         {
             magicObstacle_Magic?.Invoke();
             once = true;
